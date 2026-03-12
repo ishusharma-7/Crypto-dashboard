@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>Crypto Trading</title>
+
+<link rel="stylesheet" href="css/style.css">
+
+<script src="https://s3.tradingview.com/tv.js"></script>
+
+</head>
+
+<body>
+
+<nav class="navbar">
+
+<h2>🚀 CryptoDash</h2>
+
+<div class="nav-links">
+
+<a href="dashboard.html">Home</a>
+<a href="portfolio.html">Portfolio</a>
+<a href="about.html">About</a>
+
+<button id="modeToggle">🌙</button>
+
+</div>
+
+</nav>
+
+
+<div class="trading-page">
+
+<!-- COIN HEADER -->
+
+<div class="coin-header">
+
+<img id="coinLogo">
+<h1 id="coinName"></h1>
+
+</div>
+
+
+<div class="trading-layout">
+
+<!-- CHART -->
+
+<div class="chart-container">
+
+<div id="tradingview_chart"></div>
+
+</div>
+
+
+<!-- TRADE PANEL -->
+
+<div class="trade-panel">
+
+<h3>Trade</h3>
+
+<p>Live Price: <span id="livePrice">$0</span></p>
+
+<select id="orderType">
+
+<option value="market">Market Order</option>
+<option value="limit">Limit Order</option>
+
+</select>
+
+<input type="number" id="limitPrice" placeholder="Limit Price">
+
+<input type="number" id="quantity" placeholder="Quantity">
+
+<p>Total: <span id="total">$0</span></p>
+
+<div class="trade-buttons">
+
+<button id="buyBtn" class="buy">BUY</button>
+<button id="sellBtn" class="sell">SELL</button>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- TRADE HISTORY -->
+
+<div class="orders">
+
+<h3>Trade History</h3>
+
+<ul id="ordersList"></ul>
+
+</div>
+
+</div>
+
+<script src="js/crypto.js"></script>
+<script src="js/theme.js"></script>
+<script>
+
+const toggleBtn = document.getElementById("modeToggle")
+
+toggleBtn.addEventListener("click", ()=>{
+
+setTimeout(()=>{
+location.reload()
+},200)
+
+})
+
+</script>
+
+</body>
+</html>

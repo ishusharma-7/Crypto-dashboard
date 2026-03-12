@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>CryptoDash Dashboard</title>
+
+<link rel="stylesheet" href="css/style.css">
+
+</head>
+
+<body>
+
+<nav class="navbar">
+
+<h2>🚀 CryptoDash</h2>
+
+<div class="nav-links">
+
+<a href="dashboard.html">Home</a>
+<a href="portfolio.html">Portfolio</a>
+<a href="about.html">About</a>
+
+<button id="modeToggle">🌙</button>
+
+<button onclick="logout()">Logout</button>
+
+</div>
+
+</nav>
+
+<div class="layout">
+
+<aside class="wishlist">
+
+<h3>Wishlist</h3>
+
+<button id="clearAll">Clear All</button>
+
+<ul id="wishlist"></ul>
+
+</aside>
+
+<main id="dashmain">
+
+<h1>Top Crypto Market</h1>
+
+<div id="cryptoGrid" class="crypto-grid"></div>
+
+</main>
+
+</div>
+
+<script src="js/dashboard.js"></script>
+<script src="js/theme.js"></script>
+
+</body>
+</html>
