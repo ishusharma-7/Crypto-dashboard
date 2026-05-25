@@ -1,5 +1,13 @@
 const coin = localStorage.getItem("selectedCoin")
 
+if (!coin) {
+
+location = "dashboard.html"
+
+throw new Error("No coin selected")
+
+}
+
 const coinNameUI = document.getElementById("coinName")
 const coinLogo = document.getElementById("coinLogo")
 
@@ -11,36 +19,57 @@ const limitInput = document.getElementById("limitPrice")
 
 let livePrice = 0
 
-let tradingViewWidget = null;
+let tradingViewWidget = null
 
 
 
 /* COIN → BINANCE SYMBOL */
 
-function getSymbol(id){
+function getSymbol(id) {
 
 const map = {
-    bitcoin: "BTCUSDT",
-    ethereum: "ETHUSDT",
-    tether: "BTCUSDT",
-    bnb: "BNBUSDT",
-    xrp: "XRPUSDT",
-    usdc: "USDCUSDT",
-    solana: "SOLUSDT",
-    tron: "TRXUSDT",
-    figure_heloc: "FIGUSDT", // Binance pair may differ; adjust if needed
-    dogecoin: "DOGEUSDT",
-    whitebit_coin: "WBTUSDT", // Adjust if needed
-    usds: "USDSUSDT", // Adjust if needed
-    cardano: "ADAUSDT",
-    bitcoin_cash: "BCHUSDT",
-    leo_token: "LEOUSD", // Check exact symbol on Binance
-    hyperliquid: "HYPERUSDT", // Check exact symbol on Binance
-    monero: "XMRUSDT",
-    chainlink: "LINKUSDT",
-    ethena_usde: "USDEUSDT", // Check exact symbol on Binance
-    canton: "CANTONUSDT" // Check exact symbol on Binance
-};
+
+bitcoin: "BTCUSDT",
+
+ethereum: "ETHUSDT",
+
+tether: "BTCUSDT",
+
+bnb: "BNBUSDT",
+
+xrp: "XRPUSDT",
+
+usdc: "USDCUSDT",
+
+solana: "SOLUSDT",
+
+tron: "TRXUSDT",
+
+figure_heloc: "FIGUSDT",
+
+dogecoin: "DOGEUSDT",
+
+whitebit_coin: "WBTUSDT",
+
+usds: "USDSUSDT",
+
+cardano: "ADAUSDT",
+
+bitcoin_cash: "BCHUSDT",
+
+leo_token: "LEOUSD",
+
+hyperliquid: "HYPERUSDT",
+
+monero: "XMRUSDT",
+
+chainlink: "LINKUSDT",
+
+ethena_usde: "USDEUSDT",
+
+canton: "CANTONUSDT"
+
+}
 
 return map[id] || "BTCUSDT"
 
@@ -52,16 +81,35 @@ const symbol = getSymbol(coin)
 
 /* LOAD COIN INFO */
 
-async function loadCoin(){
+async function loadCoin() {
+
+try {
 
 const res = await fetch(
 `https://api.coingecko.com/api/v3/coins/${coin}`
 )
 
+if (!res.ok) {
+
+throw new Error("Failed to load coin")
+
+}
+
 const data = await res.json()
 
-coinNameUI.innerText = data.name
-coinLogo.src = data.image.small
+coinNameUI.innerText = data.name || coin
+
+coinLogo.src = data.image?.small || ""
+
+}
+
+catch (err) {
+
+console.error(err)
+
+coinNameUI.innerText = "Failed to load"
+
+}
 
 }
 
@@ -69,35 +117,41 @@ coinLogo.src = data.image.small
 
 /* TRADINGVIEW BINANCE CHART */
 
-function loadChart(){
+function loadChart() {
 
 const currentTheme = localStorage.getItem("theme")
 
-const chartTheme = currentTheme === "light" ? "light" : "dark"
+const chartTheme =
+currentTheme === "light"
+? "light"
+: "dark"
 
 new TradingView.widget({
 
-autosize:true,
+autosize: true,
 
-symbol:`BINANCE:${symbol}`,
+symbol: `BINANCE:${symbol}`,
 
-interval:"5",
+interval: "5",
 
-timezone:"Etc/UTC",
+timezone: "Etc/UTC",
 
 theme: chartTheme,
 
-style:"1",
+style: "1",
 
-locale:"en",
+locale: "en",
 
-toolbar_bg: chartTheme === "light" ? "#ffffff" : "#131722",
+toolbar_bg:
+chartTheme === "light"
+? "#ffffff"
+: "#131722",
 
-enable_publishing:false,
+enable_publishing: false,
 
-hide_top_toolbar:false,
+hide_top_toolbar: false,
 
-container_id:"tradingview_chart"
+container_id: "tradingview_chart"
 
 })
 
@@ -107,21 +161,30 @@ container_id:"tradingview_chart"
 
 /* LIVE BINANCE PRICE */
 
-function startPrice(){
+function startPrice() {
 
 const ws = new WebSocket(
 `wss://stream.binance.com:9443/ws/${symbol.toLowerCase()}@trade`
 )
 
-ws.onmessage = (event)=>{
+ws.onmessage = (event) => {
 
 const data = JSON.parse(event.data)
 
 livePrice = parseFloat(data.p)
 
-priceUI.innerText = "$"+livePrice.toFixed(2)
+priceUI.innerText =
+"$" + livePrice.toFixed(2)
 
 updateTotal()
+
+}
+
+ws.onerror = () => {
+
+console.log(
+"WebSocket connection failed"
+)
 
 }
 
@@ -131,48 +194,73 @@ updateTotal()
 
 /* TOTAL CALCULATION */
 
-function updateTotal(){
+function updateTotal() {
 
-const qty = qtyInput.value
+const qty = qtyInput?.value
 
-if(!qty){
+if (!qty) {
 
-totalUI.innerText="$0"
+totalUI.innerText = "$0"
+
 return
 
 }
 
-totalUI.innerText="$"+(qty*livePrice).toFixed(2)
+totalUI.innerText =
+"$" +
+(qty * livePrice).toFixed(2)
 
 }
 
-qtyInput.addEventListener("input",updateTotal)
+if (qtyInput) {
+
+qtyInput.addEventListener(
+"input",
+updateTotal
+)
+
+}
 
 
 
 /* SAVE ORDER */
 
-function saveOrder(type){
+function saveOrder(type) {
 
-const qty = qtyInput.value
+const qty = qtyInput?.value
 
-if(!qty) return
+if (!qty) return
 
-const price = limitInput.value || livePrice
+const price =
+limitInput?.value || livePrice
 
-let orders = JSON.parse(localStorage.getItem("orders")) || []
+let orders =
+JSON.parse(
+localStorage.getItem(
+"orders"
+)
+) || []
 
 orders.push({
 
-coin:coin,
-type:type,
-price:price,
-qty:qty,
-time:new Date().toLocaleString()
+coin: coin,
+
+type: type,
+
+price: price,
+
+qty: qty,
+
+time:
+new Date()
+.toLocaleString()
 
 })
 
-localStorage.setItem("orders",JSON.stringify(orders))
+localStorage.setItem(
+"orders",
+JSON.stringify(orders)
+)
 
 renderOrders()
 
@@ -182,15 +270,33 @@ renderOrders()
 
 /* TRADE BUTTONS */
 
-document.getElementById("buyBtn").onclick=()=>{
+const buyBtn =
+document.getElementById(
+"buyBtn"
+)
+
+const sellBtn =
+document.getElementById(
+"sellBtn"
+)
+
+if (buyBtn) {
+
+buyBtn.onclick = () => {
 
 saveOrder("BUY")
 
 }
 
-document.getElementById("sellBtn").onclick=()=>{
+}
+
+if (sellBtn) {
+
+sellBtn.onclick = () => {
 
 saveOrder("SELL")
+
+}
 
 }
 
@@ -198,22 +304,45 @@ saveOrder("SELL")
 
 /* RENDER TRADE HISTORY */
 
-function renderOrders(){
+function renderOrders() {
 
-const list = document.getElementById("ordersList")
+const list =
+document.getElementById(
+"ordersList"
+)
 
-list.innerHTML=""
+if (!list) return
 
-const orders = JSON.parse(localStorage.getItem("orders")) || []
+list.innerHTML = ""
 
-orders.reverse().forEach(o=>{
+const orders =
+JSON.parse(
+localStorage.getItem(
+"orders"
+)
+) || []
 
-const li=document.createElement("li")
+orders.reverse().forEach(o => {
 
-li.innerHTML=`
-${o.type} ${o.qty} ${o.coin}
+const li =
+document.createElement(
+"li"
+)
+
+li.innerHTML = `
+
+${o.type}
+${o.qty}
+${o.coin}
+
 @ $${o.price}
-<span>${o.time}</span>
+
+<span>
+
+${o.time}
+
+</span>
+
 `
 
 list.appendChild(li)
@@ -223,6 +352,8 @@ list.appendChild(li)
 }
 
 
+
+/* INITIAL LOAD */
 
 loadCoin()
 
