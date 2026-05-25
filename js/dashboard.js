@@ -37,9 +37,18 @@ card.innerHTML = `
 
 <p class="market">Market Cap: ${(coin.market_cap/1000000).toFixed(1)}M</p>
 
-<p class="change ${coin.price_change_percentage_24h < 0 ? "red" : "green"}">
+<p class="change ${
+coin.price_change_percentage_24h !== null &&
+coin.price_change_percentage_24h < 0
+? "red"
+: "green"
+}">
 
-24h: ${coin.price_change_percentage_24h.toFixed(2)}%
+24h: ${
+coin.price_change_percentage_24h !== null
+? coin.price_change_percentage_24h.toFixed(2)
+: "0.00"
+}%
 
 </p>
 
